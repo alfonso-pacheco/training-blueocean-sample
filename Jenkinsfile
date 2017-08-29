@@ -15,9 +15,26 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh './jenkins/test-all.sh'
-        junit '**/surefire-reports/**/*.xml'
-        junit '**/test-results/karma/*.xml'
+        parallel(
+          "Test": {
+            sh './jenkins/test-all.sh'
+            junit '**/surefire-reports/**/*.xml'
+            junit '**/test-results/karma/*.xml'
+            
+          },
+          "Back End": {
+            sh './jenkins/test-backend.sh'
+            
+          },
+          "Static": {
+            sh './jenkins/test-static.sh'
+            
+          },
+          "Performance": {
+            sh './jenkins/test-performance.sh'
+            
+          }
+        )
       }
     }
   }
